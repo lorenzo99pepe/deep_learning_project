@@ -80,7 +80,7 @@ def get_images_lists_from_more_paths(paths_list, idxslice=105, remove_first=2):
     return t2, t1ce, t1, flair, seg
 
 
-def get_images_from_path(pathlist, idxslice=105):
+def save_images_from_path(pathlist, idxslice=105):
     """
     Args:
         my_path (str): Path of the major folder containing the subfolders (HGG in our case)
