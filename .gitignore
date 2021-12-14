@@ -1,6 +1,7 @@
-# Byte-compiled / optimized / DLL files
+# Things added
 __pycache__/
 data/
+*.DS_Store
 
 # C extensions
 *.so
