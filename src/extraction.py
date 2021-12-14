@@ -4,6 +4,7 @@ import numpy as np
 
 from PIL import Image
 from matplotlib import cm
+from pathlib import Path
 
 def get_images_lists_from_path(my_path, idxslice=105, remove_first=2):
     """[summary]
@@ -78,6 +79,21 @@ def get_images_lists_from_more_paths(paths_list, idxslice=105, remove_first=2):
         flair = flair + flair_add
         seg = seg + seg_add
     return t2, t1ce, t1, flair, seg
+
+
+def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data/train/"):
+    name = Path(output_path).name
+    os.makedirs(output_path, exist_ok=True)
+    for i in range(len(images_list)):
+        img = Image.fromarray(np.uint8(cm.gist_earth(images_list[i]/np.max(images_list[i]+1))*255)[:, :, :3])
+        img.save(output_path + '/' + name +'_'+ str(i) + '.jpeg')
+
+
+def export_all_images_jpeg(img_list_of_lists, type_names):
+    assert len(img_list_of_lists) == len(type_names)
+    for i in range(len(img_list_of_lists)):
+        export_images_list_jpeg(img_list_of_lists[i], os.getcwd() + "/data/" + type_names[i])
+
 
 
 def save_images_from_path(pathlist, idxslice=105):
