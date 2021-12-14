@@ -1,5 +1,9 @@
 import os
 import SimpleITK
+import numpy as np
+
+from PIL import Image
+from matplotlib import cm
 
 def get_images_lists_from_path(my_path, idxslice=105, remove_first=2):
     """[summary]
@@ -74,3 +78,33 @@ def get_images_lists_from_more_paths(paths_list, idxslice=105, remove_first=2):
         flair = flair + flair_add
         seg = seg + seg_add
     return t2, t1ce, t1, flair, seg
+
+
+def get_images_from_path(pathlist, idxslice=105):
+    """
+    Args:
+        my_path (str): Path of the major folder containing the subfolders (HGG in our case)
+        idxslice (int): Time of the image to select, 
+                        105 should be the max extension of the registration by the machine so is good
+
+    """
+    train_path = os.getcwd() + "/data/train/"
+    label_path = os.getcwd() + "/data/labels/"
+
+    if not os.path.isdir(train_path):
+        os.mkdir(train_path)
+    if not os.path.isdir(label_path):
+        os.mkdir(label_path)
+
+    for file in pathlist:
+        img = SimpleITK.ReadImage(file)
+        myarray = SimpleITK.GetArrayFromImage(img[:, :, idxslice])
+        im = Image.fromarray(np.uint8(cm.gist_earth(myarray/np.max(myarray+1))*255)[:, :, :3])
+        filename = file.split("\\")[-1].split(".")[0] + ".jpg"
+
+        if 'seg' in str(file):
+            im.save(label_path + filename)
+        else:
+            im.save(train_path + filename)
+
+    return

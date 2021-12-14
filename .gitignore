@@ -1,7 +1,5 @@
 # Things added
 __pycache__/
-data/
-*.DS_Store
 
 # C extensions
 *.so
@@ -127,3 +125,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# data folders
+data/
+output/
+
+# others
+*.DS_Store
