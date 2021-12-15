@@ -6,6 +6,7 @@ import pandas as pd
 from PIL import Image
 from matplotlib import cm
 from pathlib import Path
+import shutil
 
 def get_images_lists_from_path(my_path, idxslice=105, remove_first=2):
     """[summary]
@@ -95,6 +96,25 @@ def export_all_images_jpeg(img_list_of_lists, type_names, output_path=os.getcwd(
     assert len(img_list_of_lists) == len(type_names)
     for i in range(len(img_list_of_lists)):
         export_images_list_jpeg(img_list_of_lists[i], output_path + type_names[i])
+
+
+def delete_bad_dirs_brats2020(brats2020path):
+    bad_dirs = []
+
+    _, dirs, _ = next(os.walk(brats2020path))
+
+    for directo in dirs:
+        _, _, files = next(os.walk(brats2020path / directo))
+        conto = 0
+        for file in files:
+            if 'seg' not in file:
+                conto +=1
+        if conto!=4:
+            bad_dirs.append(brats2020path / directo)
+
+    for bad in bad_dirs:
+        shutil.rmtree(str(bad), ignore_errors=True)
+    return bad_dirs
 
 
 def save_images_from_path(pathlist, idxslice=105):

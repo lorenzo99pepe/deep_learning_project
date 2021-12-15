@@ -47,7 +47,7 @@ class Mobile_Dataset(Dataset):
         return sample
 
 
-def get_mobile_dataloaders(images, masks, batch_size=5):
+def get_mobile_dataloaders(images, masks, batch_size=14):
     image_datasets = {
         x: Mobile_Dataset(
             images,
