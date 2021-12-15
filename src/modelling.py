@@ -19,11 +19,14 @@ from src.loading import get_dataloader_single_folder
 #import datahandler
 
 
-def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory, epochs, batch_size):
+def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory, model_exp_name, epochs, batch_size):
     # Create the deeplabv3 resnet101 model which is pretrained on a subset
     # of COCO train2017, on the 20 categories that are present in the Pascal VOC dataset.
     model = createDeepLabv3()
     model.train()
+
+    print("Model Created")
+
     data_directory = Path(data_directory)
     # Create the experiment directory if not present
     exp_directory = Path(exp_directory)
@@ -36,7 +39,12 @@ def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory,
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
     # Specify the evaluation metrics
-    metrics = {'f1_score': f1_score, 'auroc': roc_auc_score}
+    metrics = {'f1_score': f1_score}
+
+    # metrics = {'f1_score': f1_score, 'auroc': roc_auc_score}
+    # roc_auc_score returns an error if used
+    
+    print("Parameters defined")
 
     # Create the dataloader
     dataloaders = get_dataloader_single_folder(
@@ -44,17 +52,19 @@ def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory,
         image_folder=image_folder,
         mask_folder=mask_folder,
         batch_size=batch_size)
-        
+
+    print("Dataloaders created")
+
     _ = train_model(model,
                     criterion,
                     dataloaders,
                     optimizer,
-                    bpath=exp_directory,
                     metrics=metrics,
+                    bpath=exp_directory,
                     num_epochs=epochs)
 
     # Save the trained model
-    torch.save(model, exp_directory / 'weights.pt')
+    torch.save(model, exp_directory / model_exp_name + '.pt')
 
 
 def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,

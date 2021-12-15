@@ -131,6 +131,7 @@ data/
 output/
 data_extracted/
 export/
+models/*
 
 # others
 *.DS_Store
