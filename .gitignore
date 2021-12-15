@@ -130,6 +130,7 @@ dmypy.json
 data/
 output/
 data_extracted/
+export/
 
 # others
 *.DS_Store
