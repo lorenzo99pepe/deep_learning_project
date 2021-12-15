@@ -16,8 +16,6 @@ from tqdm import tqdm
 
 from src.loading import get_dataloader_single_folder
 
-#import datahandler
-
 
 def deeplab_finetuning(
     data_directory, 

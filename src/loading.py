@@ -3,14 +3,15 @@ from PIL import Image
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from src.segdataset import SegmentationDataset
+from src.deeplab.segdataset import SegmentationDataset
 
 
-def get_dataloader_single_folder(data_dir: str,
-                                 image_folder: str = 'Images',
-                                 mask_folder: str = 'Masks',
-                                 fraction: float = 0.2,
-                                 batch_size: int = 4):
+def get_deeplab_dataloader(
+    data_dir: str,
+    image_folder: str = 'Images',
+    mask_folder: str = 'Masks',
+    fraction: float = 0.2,
+    batch_size: int = 4):
     """Create train and test dataloader from a single directory containing
     the image and mask folders.
     Args:

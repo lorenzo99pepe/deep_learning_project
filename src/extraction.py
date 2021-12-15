@@ -1,6 +1,7 @@
 import os
 import SimpleITK
 import numpy as np
+import pandas as pd
 
 from PIL import Image
 from matplotlib import cm
