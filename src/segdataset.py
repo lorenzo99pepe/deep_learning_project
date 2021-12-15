@@ -20,7 +20,7 @@ class SegmentationDataset(VisionDataset):
                  fraction: float = None,
                  subset: str = None,
                  image_color_mode: str = "rgb",
-                 mask_color_mode: str = "grayscale") -> None:
+                 mask_color_mode: str = "rgb") -> None:
         """
         Args:
             root (str): Root directory path.

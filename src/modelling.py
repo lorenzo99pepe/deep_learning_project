@@ -155,7 +155,7 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
     return model
 
 
-def createDeepLabv3(pretrained = True, outputchannels=1):
+def createDeepLabv3(pretrained = True, outputchannels=3):
     """DeepLabv3 class with custom head
     Args:
         outputchannels (int, optional): The number of output channels
