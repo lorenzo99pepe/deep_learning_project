@@ -81,7 +81,7 @@ def get_images_lists_from_more_paths(paths_list, idxslice=105, remove_first=2):
     return t2, t1ce, t1, flair, seg
 
 
-def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data/train/"):
+def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data_extracted/"):
     name = Path(output_path).name
     os.makedirs(output_path, exist_ok=True)
     for i in range(len(images_list)):
@@ -89,10 +89,10 @@ def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data/train/
         img.save(output_path + '/' + name +'_'+ str(i) + '.jpeg')
 
 
-def export_all_images_jpeg(img_list_of_lists, type_names):
+def export_all_images_jpeg(img_list_of_lists, type_names, output_path=os.getcwd() + "/data_extracted/"):
     assert len(img_list_of_lists) == len(type_names)
     for i in range(len(img_list_of_lists)):
-        export_images_list_jpeg(img_list_of_lists[i], os.getcwd() + "/data/" + type_names[i])
+        export_images_list_jpeg(img_list_of_lists[i], output_path + type_names[i])
 
 
 

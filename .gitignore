@@ -129,6 +129,7 @@ dmypy.json
 # data folders
 data/
 output/
+data_extracted/
 
 # others
 *.DS_Store
