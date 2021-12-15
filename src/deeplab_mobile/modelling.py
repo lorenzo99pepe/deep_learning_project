@@ -31,16 +31,13 @@ def train_deeplab_mobile(model,
     metrics={'f1_score': f1_score}, 
     bpath=Path(os.getcwd()) / 'models',
     criterion = torch.nn.MSELoss(reduction='mean'), #TODO: torch.nn.CrossEntropyLoss(reduction='mean') gives an error but find another one that is good
+    num_epochs = 2,
     ):
 
     since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
-    metrics = metrics
-    num_epochs = 2
-    bpath = bpath
 
-    criterion = criterion
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
     # Initialize the log file for training and testing loss and metrics
