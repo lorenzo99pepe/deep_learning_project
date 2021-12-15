@@ -5,6 +5,7 @@ from torchvision import transforms
 
 from src.segdataset import SegmentationDataset
 
+
 def get_dataloader_single_folder(data_dir: str,
                                  image_folder: str = 'Images',
                                  mask_folder: str = 'Masks',
@@ -37,7 +38,7 @@ def get_dataloader_single_folder(data_dir: str,
     dataloaders = {
         x: DataLoader(image_datasets[x],
                       batch_size=batch_size,
-                      shuffle=True,
+                      #shuffle=True, #to test without shuffle not done yet
                       #num_workers=8
                       )
         for x in ['Train', 'Test']

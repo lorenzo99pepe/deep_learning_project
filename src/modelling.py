@@ -19,10 +19,18 @@ from src.loading import get_dataloader_single_folder
 #import datahandler
 
 
-def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory, model_exp_name, epochs, batch_size):
+def deeplab_finetuning(
+    data_directory, 
+    image_folder, 
+    mask_folder, 
+    exp_directory, 
+    model_exp_name, 
+    epochs, 
+    batch_size,
+    pretrained=True):
     # Create the deeplabv3 resnet101 model which is pretrained on a subset
     # of COCO train2017, on the 20 categories that are present in the Pascal VOC dataset.
-    model = createDeepLabv3()
+    model = createDeepLabv3(pretrained=pretrained)
     model.train()
 
     print("Model Created")
@@ -34,7 +42,7 @@ def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory,
         exp_directory.mkdir()
 
     # Specify the loss function
-    criterion = torch.nn.MSELoss(reduction='mean')
+    criterion = torch.nn.MSELoss(reduction='mean') # CROSS-ENTROPHY / ACTIVATION FUNCTION SOFTMAX
     # Specify the optimizer with a lower learning rate
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
@@ -64,7 +72,7 @@ def deeplab_finetuning(data_directory, image_folder, mask_folder, exp_directory,
                     num_epochs=epochs)
 
     # Save the trained model
-    torch.save(model, exp_directory / model_exp_name + '.pt')
+    torch.save(model, str(exp_directory / model_exp_name) + '.pt')
 
 
 def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
@@ -147,7 +155,7 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
     return model
 
 
-def createDeepLabv3(outputchannels=1):
+def createDeepLabv3(pretrained = True, outputchannels=1):
     """DeepLabv3 class with custom head
     Args:
         outputchannels (int, optional): The number of output channels
@@ -155,7 +163,7 @@ def createDeepLabv3(outputchannels=1):
     Returns:
         model: Returns the DeepLabv3 model with the ResNet101 backbone.
     """
-    model = models.segmentation.deeplabv3_resnet101(pretrained=True,
+    model = models.segmentation.deeplabv3_resnet101(pretrained=pretrained,
                                                     progress=True)
     model.classifier = DeepLabHead(2048, outputchannels)
     # Set the model in training mode
