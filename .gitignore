@@ -127,6 +127,7 @@ dmypy.json
 .pyre/
 
 # data folders
+raw_data/
 data/
 output/
 data_extracted/
