@@ -1,5 +1,6 @@
 import os
 import SimpleITK
+import pandas as pd
 import numpy as np
 
 from PIL import Image
@@ -104,23 +105,39 @@ def save_images_from_path(pathlist, idxslice=105):
                         105 should be the max extension of the registration by the machine so is good
 
     """
-    train_path = os.getcwd() + "/data/train/"
-    label_path = os.getcwd() + "/data/labels/"
+    data_path = os.getcwd() + '/data'
+    image_path = os.getcwd() + '/data' + '/images'
+    label_path = os.getcwd() + '/data' + '/labels'
 
-    if not os.path.isdir(train_path):
-        os.mkdir(train_path)
+    map_filepath = data_path + '/name_mapping.csv'
+    ID_col = 'BraTS_2019_subject_ID'
+
+    if not os.path.isdir(image_path):
+        os.mkdir(image_path)
     if not os.path.isdir(label_path):
         os.mkdir(label_path)
 
-    for file in pathlist:
-        img = SimpleITK.ReadImage(file)
-        myarray = SimpleITK.GetArrayFromImage(img[:, :, idxslice])
-        im = Image.fromarray(np.uint8(cm.gist_earth(myarray/np.max(myarray+1))*255)[:, :, :3])
-        filename = file.split("\\")[-1].split(".")[0] + ".jpg"
+    map_df = pd.read_csv(map_filepath)
+    unique_files = map_df[ID_col].unique()
 
-        if 'seg' in str(file):
-            im.save(label_path + filename)
-        else:
-            im.save(train_path + filename)
+    for filename in sorted(unique_files):
+        image_comp = []
+        image_singular = [image_paths for image_paths in pathlist if filename in image_paths]
+
+        for file in image_singular:
+            img = SimpleITK.ReadImage(file)
+            myarray = SimpleITK.GetArrayFromImage(img[:, :, idxslice])
+            shape = myarray.shape
+
+            if 'seg' in str(file):
+                file_name = label_path + "/" + filename + ".npy"
+                with open(file_name, 'wb') as f:
+                    np.save(f, myarray)
+            else:
+                image_comp.extend([myarray.reshape(shape[0], shape[1], 1)])
+        image_comp_full = np.concatenate(np.array(image_comp), axis=2)
+        file_name = image_path + "/" + filename + ".npy"
+        with open(file_name, 'wb') as f:
+            np.save(f, image_comp_full)
 
     return
