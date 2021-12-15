@@ -86,7 +86,7 @@ def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data_extrac
     os.makedirs(output_path, exist_ok=True)
     for i in range(len(images_list)):
         img = Image.fromarray(np.uint8(cm.gist_earth(images_list[i]/np.max(images_list[i]+1))*255)[:, :, :3])
-        img.save(output_path + '/' + name +'_'+ str(i) + '.jpeg')
+        img.save(output_path + '/' + name +'_'+ str(i) + '.png')
 
 
 def export_all_images_jpeg(img_list_of_lists, type_names, output_path=os.getcwd() + "/data_extracted/"):
@@ -94,7 +94,7 @@ def export_all_images_jpeg(img_list_of_lists, type_names, output_path=os.getcwd(
     for i in range(len(img_list_of_lists)):
         export_images_list_jpeg(img_list_of_lists[i], output_path + type_names[i])
 
-
+# EXTRACT IN NUMPY ARRAY FORMAT (PICKLE, H5) TO SAVE SPACE
 
 def save_images_from_path(pathlist, idxslice=105):
     """
