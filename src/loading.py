@@ -8,10 +8,11 @@ from src.deeplab.segdataset import SegmentationDataset
 
 def get_deeplab_dataloader(
     data_dir: str,
-    image_folder: str = 'Images',
-    mask_folder: str = 'Masks',
+    image_folder: str = "Images",
+    mask_folder: str = "Masks",
     fraction: float = 0.2,
-    batch_size: int = 4):
+    batch_size: int = 4,
+):
     """Create train and test dataloader from a single directory containing
     the image and mask folders.
     Args:
@@ -27,22 +28,25 @@ def get_deeplab_dataloader(
     data_transforms = transforms.Compose([transforms.ToTensor()])
 
     image_datasets = {
-        x: SegmentationDataset(data_dir,
-                               image_folder=image_folder,
-                               mask_folder=mask_folder,
-                               seed=100,
-                               fraction=fraction,
-                               subset=x,
-                               transforms=data_transforms)
-        for x in ['Train', 'Test']
+        x: SegmentationDataset(
+            data_dir,
+            image_folder=image_folder,
+            mask_folder=mask_folder,
+            seed=100,
+            fraction=fraction,
+            subset=x,
+            transforms=data_transforms,
+        )
+        for x in ["Train", "Test"]
     }
     dataloaders = {
-        x: DataLoader(image_datasets[x],
-                      batch_size=batch_size,
-                      #shuffle=True, #to test without shuffle not done yet
-                      #num_workers=8
-                      )
-        for x in ['Train', 'Test']
+        x: DataLoader(
+            image_datasets[x],
+            batch_size=batch_size,
+            # shuffle=True, #to test without shuffle not done yet
+            # num_workers=8
+        )
+        for x in ["Train", "Test"]
     }
     return dataloaders
 

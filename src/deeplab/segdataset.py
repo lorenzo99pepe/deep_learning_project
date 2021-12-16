@@ -11,16 +11,19 @@ class SegmentationDataset(VisionDataset):
     The dataset is compatible with torchvision transforms.
     The transforms passed would be applied to both the Images and Masks.
     """
-    def __init__(self,
-                 root: str,
-                 image_folder: str,
-                 mask_folder: str,
-                 transforms: Optional[Callable] = None,
-                 seed: int = None,
-                 fraction: float = None,
-                 subset: str = None,
-                 image_color_mode: str = "rgb",
-                 mask_color_mode: str = "rgb") -> None:
+
+    def __init__(
+        self,
+        root: str,
+        image_folder: str,
+        mask_folder: str,
+        transforms: Optional[Callable] = None,
+        seed: int = None,
+        fraction: float = None,
+        subset: str = None,
+        image_color_mode: str = "rgb",
+        mask_color_mode: str = "rgb",
+    ) -> None:
         """
         Args:
             root (str): Root directory path.
@@ -65,9 +68,11 @@ class SegmentationDataset(VisionDataset):
             self.mask_names = sorted(mask_folder_path.glob("*"))
         else:
             if subset not in ["Train", "Test"]:
-                raise (ValueError(
-                    f"{subset} is not a valid input. Acceptable values are Train and Test."
-                ))
+                raise (
+                    ValueError(
+                        f"{subset} is not a valid input. Acceptable values are Train and Test."
+                    )
+                )
             self.fraction = fraction
             self.image_list = np.array(sorted(image_folder_path.glob("*")))
             self.mask_list = np.array(sorted(mask_folder_path.glob("*")))
@@ -78,15 +83,19 @@ class SegmentationDataset(VisionDataset):
                 self.image_list = self.image_list[indices]
                 self.mask_list = self.mask_list[indices]
             if subset == "Train":
-                self.image_names = self.image_list[:int(
-                    np.ceil(len(self.image_list) * (1 - self.fraction)))]
-                self.mask_names = self.mask_list[:int(
-                    np.ceil(len(self.mask_list) * (1 - self.fraction)))]
+                self.image_names = self.image_list[
+                    : int(np.ceil(len(self.image_list) * (1 - self.fraction)))
+                ]
+                self.mask_names = self.mask_list[
+                    : int(np.ceil(len(self.mask_list) * (1 - self.fraction)))
+                ]
             else:
                 self.image_names = self.image_list[
-                    int(np.ceil(len(self.image_list) * (1 - self.fraction))):]
+                    int(np.ceil(len(self.image_list) * (1 - self.fraction))) :
+                ]
                 self.mask_names = self.mask_list[
-                    int(np.ceil(len(self.mask_list) * (1 - self.fraction))):]
+                    int(np.ceil(len(self.mask_list) * (1 - self.fraction))) :
+                ]
 
     def __len__(self) -> int:
         return len(self.image_names)
@@ -94,8 +103,7 @@ class SegmentationDataset(VisionDataset):
     def __getitem__(self, index: int) -> Any:
         image_path = self.image_names[index]
         mask_path = self.mask_names[index]
-        with open(image_path, "rb") as image_file, open(mask_path,
-                                                        "rb") as mask_file:
+        with open(image_path, "rb") as image_file, open(mask_path, "rb") as mask_file:
             image = Image.open(image_file)
             if self.image_color_mode == "rgb":
                 image = image.convert("RGB")
