@@ -32,12 +32,22 @@ def plot_deeplab_mobile_predictions(model,
 
         with torch.no_grad():
             output = model(input_batch)['out'][0]
-        output_predictions = output #.argmax(0)
+        output_predictions = torch.amax(output, 0).numpy()
 
         # create a color pallette, selecting a color for each class
         palette = torch.tensor([2 ** 25 - 1, 2 ** 15 - 1, 2 ** 21 - 1])
         colors = torch.as_tensor([i for i in range(21)])[:, None] * palette
         colors = (colors % 255).numpy().astype("uint8")
+
+        threshold_min = np.percentile(output_predictions, 90)
+        threshold_mid = np.percentile(output_predictions, 95)
+        threshold_max = np.percentile(output_predictions, 99)
+
+
+        output_pred = output_predictions
+        output_pred = np.where(output_predictions > threshold_min, threshold_min, 0)
+        output_pred = np.where(output_predictions > threshold_mid, threshold_mid, output_pred)
+        output_pred = np.where(output_predictions > threshold_max, threshold_max, output_pred)
 
         _, ax = plt.subplots(1, 3, figsize=(15, 4))
         ax[0].set_title('input image')
@@ -45,7 +55,7 @@ def plot_deeplab_mobile_predictions(model,
         ax[0].imshow(input_tensor[0])
         ax[1].set_title('segmented output')
         ax[1].axis('off')
-        ax[1].imshow(output_predictions[0])
+        ax[1].imshow(output_pred)
         ax[2].set_title('ground truth')
         ax[2].axis('off')
         ax[2].imshow(truth[0])
@@ -61,12 +71,22 @@ def plot_mobile_prediction_from_path(model, img_path):
 
     with torch.no_grad():
         output = model(input_batch)['out'][0]
-    output_predictions = output 
+    output_predictions = torch.amax(output, 0).numpy()
 
     # create a color pallette, selecting a color for each class
     palette = torch.tensor([2 ** 25 - 1, 2 ** 15 - 1, 2 ** 21 - 1])
     colors = torch.as_tensor([i for i in range(21)])[:, None] * palette
     colors = (colors % 255).numpy().astype("uint8")
+
+    threshold_min = np.percentile(output_predictions, 90)
+    threshold_mid = np.percentile(output_predictions, 95)
+    threshold_max = np.percentile(output_predictions, 99)
+
+
+    output_pred = output_predictions
+    output_pred = np.where(output_predictions > threshold_min, threshold_min, 0)
+    output_pred = np.where(output_predictions > threshold_mid, threshold_mid, output_pred)
+    output_pred = np.where(output_predictions > threshold_max, threshold_max, output_pred)
 
     _, ax = plt.subplots(1, 2, figsize=(15, 4))
     ax[0].set_title('input image')
@@ -74,5 +94,5 @@ def plot_mobile_prediction_from_path(model, img_path):
     ax[0].imshow(input_tensor[0])
     ax[1].set_title('segmented output')
     ax[1].axis('off')
-    ax[1].imshow(output_predictions[0])
+    ax[1].imshow(output_pred)
     plt.show()
