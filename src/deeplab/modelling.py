@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from src.loading import get_dataloader_single_folder
+from src.loading import get_deeplab_dataloader
 
 
 def deeplab_finetuning(
@@ -41,6 +41,8 @@ def deeplab_finetuning(
 
     # Specify the loss function
     criterion = torch.nn.MSELoss(reduction='mean') # CROSS-ENTROPHY / ACTIVATION FUNCTION SOFTMAX
+    # criterion = torch.nn.CrossEntropyLoss()
+
     # Specify the optimizer with a lower learning rate
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
@@ -53,7 +55,7 @@ def deeplab_finetuning(
     print("Parameters defined")
 
     # Create the dataloader
-    dataloaders = get_dataloader_single_folder(
+    dataloaders = get_deeplab_dataloader(
         data_directory, 
         image_folder=image_folder,
         mask_folder=mask_folder,
@@ -62,6 +64,7 @@ def deeplab_finetuning(
     print("Dataloaders created")
 
     _ = train_model(model,
+                    model_exp_name,
                     criterion,
                     dataloaders,
                     optimizer,
@@ -73,14 +76,16 @@ def deeplab_finetuning(
     torch.save(model, str(exp_directory / model_exp_name) + '.pt')
 
 
-def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
+def train_model(model, model_exp_name, criterion, dataloaders, optimizer, metrics, bpath,
                 num_epochs):
     since = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
     # Use gpu if available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
     model.to(device)
+
     # Initialize the log file for training and testing loss and metrics
     fieldnames = ['epoch', 'Train_loss', 'Test_loss'] + \
         [f'Train_{m}' for m in metrics.keys()] + \
@@ -135,7 +140,7 @@ def train_model(model, criterion, dataloaders, optimizer, metrics, bpath,
         for field in fieldnames[3:]:
             batchsummary[field] = np.mean(batchsummary[field])
         print(batchsummary)
-        with open(os.path.join(bpath, 'log.csv'), 'a', newline='') as csvfile:
+        with open(os.path.join(bpath, f'{model_exp_name}.csv'), 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow(batchsummary)
             # deep copy the model
@@ -161,9 +166,10 @@ def createDeepLabv3(pretrained = True, outputchannels=3):
     Returns:
         model: Returns the DeepLabv3 model with the ResNet101 backbone.
     """
-    model = models.segmentation.deeplabv3_resnet101(pretrained=pretrained,
-                                                    progress=True)
-    model.classifier = DeepLabHead(2048, outputchannels)
+    model = models.segmentation.deeplabv3_mobilenet_v3_large(
+        pretrained=pretrained, progress=True, num_classes=3
+    )
+    model.classifier = DeepLabHead(960, outputchannels)
     # Set the model in training mode
     model.train()
     return model
