@@ -84,18 +84,18 @@ def get_images_lists_from_more_paths(paths_list, idxslice=105, remove_first=2):
 
 
 # TODO: EXTRACT IN NUMPY ARRAY FORMAT (PICKLE, H5) TO SAVE SPACE
-def export_images_list_jpeg(images_list, output_path=os.getcwd() + "/data_extracted/"):
+def export_images_list_jpeg(images_list, type_exp='.jpeg', output_path=os.getcwd() + "/data_extracted/"):
     name = Path(output_path).name
     os.makedirs(output_path, exist_ok=True)
     for i in range(len(images_list)):
         img = Image.fromarray(np.uint8(cm.gist_earth(images_list[i]/np.max(images_list[i]+1))*255)[:, :, :3])
-        img.save(output_path + '/' + name +'_'+ str(i) + '.png')
+        img.save(output_path + '/' + name +'_'+ str(i) + type_exp)
 
 
-def export_all_images_jpeg(img_list_of_lists, type_names, output_path=os.getcwd() + "/data_extracted/"):
+def export_all_images(img_list_of_lists, type_names, type_exp = '.jpeg', output_path=os.getcwd() + "/data_extracted/"):
     assert len(img_list_of_lists) == len(type_names)
     for i in range(len(img_list_of_lists)):
-        export_images_list_jpeg(img_list_of_lists[i], output_path + type_names[i])
+        export_images_list_jpeg(img_list_of_lists[i], type_exp, output_path + type_names[i])
 
 
 def delete_bad_dirs_brats2020(brats2020path):

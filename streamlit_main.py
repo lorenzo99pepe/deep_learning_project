@@ -49,6 +49,7 @@ for img in uploaded_files:
     if img is not None:
         img_proc = np.array(Image.open(img)).T
         input_tensor = torch.tensor(img_proc).type(torch.ShortTensor).float()
+        st.write(input_tensor.shape)
         input_batch = input_tensor.unsqueeze(0) 
 
         with torch.no_grad():
