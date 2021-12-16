@@ -82,8 +82,8 @@ def train_model(model, model_exp_name, criterion, dataloaders, optimizer, metric
     best_model_wts = copy.deepcopy(model.state_dict())
     best_loss = 1e10
     # Use gpu if available
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    # device = "cpu"
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
     model.to(device)
 
     # Initialize the log file for training and testing loss and metrics
