@@ -117,6 +117,36 @@ def delete_bad_dirs_brats2020(brats2020path):
     return bad_dirs
 
 
+def extract_images_in_survival_order(path, dir_ids, idxslice=105, remove_first=0):
+    tot_files = []
+    for dir in dir_ids:
+        files = [f for f in Path(path / dir).iterdir()]
+        for fil in files:
+            tot_files.append(str(fil))
+
+    t2 = []
+    t1ce = []
+    t1 = []
+    flair = []
+    seg = []
+
+    for file in tot_files:
+        img = SimpleITK.ReadImage(file)
+        arr = SimpleITK.GetArrayFromImage(img[:, :, idxslice])
+        if 't2' in str(file):
+            t2.append(arr)
+        elif 't1ce' in str(file):
+            t1ce.append(arr)
+        elif 't1' in str(file):
+            t1.append(arr)
+        elif 'flair' in str(file):
+            flair.append(arr)
+        elif 'seg' in str(file):
+            seg.append(arr)
+    assert len(t2) == len(t1) == len(t1ce) == len(flair) == len(seg)
+    return t2, t1ce, t1, flair, seg
+
+    
 def save_images_from_path(pathlist, idxslice=105):
     """
     Args:
