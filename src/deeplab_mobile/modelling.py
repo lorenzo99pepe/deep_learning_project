@@ -30,7 +30,7 @@ def train_deeplab_mobile(model,
     dataloaders,
     metrics={'f1_score': f1_score}, 
     bpath=Path(os.getcwd()) / 'models',
-    criterion = torch.nn.MSELoss(reduction='mean'), #TODO: torch.nn.CrossEntropyLoss(reduction='mean') gives an error but find another one that is good
+    criterion = torch.nn.MSELoss(reduction='mean'), #TODO: torch.nn.CrossEntropyLoss(reduction='mean') check activation expected / binary crosssentropy
     num_epochs = 2,
     ):
 
