@@ -17,12 +17,6 @@ from matplotlib import pyplot as plt
 
 st.title('Your Brain Tumor Segmentation')
 
-uploaded_files = st.file_uploader(
-    "Upload RGB Brain Tumor images", 
-    type=['png', 'jpeg', 'jpg'], 
-    accept_multiple_files=True,
-    key=None, 
-    help="Drag and drop or browse to select a png or jpeg file that will be segmented")
 
 models = []
 models_path = Path(os.getcwd()) / 'models'
@@ -41,6 +35,15 @@ model_option = st.selectbox(
 model = torch.load(Path(os.getcwd()) / 'models' / model_option)
 model.eval()
 
+
+uploaded_files = st.file_uploader(
+    "Upload RGB Brain Tumor images", 
+    type=['png', 'jpeg', 'jpg'], 
+    accept_multiple_files=True,
+    key=None, 
+    help="Drag and drop or browse to select a png or jpeg file that will be segmented")
+
+
 predictions = []
 for img in uploaded_files:
     if img is not None:
@@ -53,10 +56,13 @@ for img in uploaded_files:
         output_predictions = output 
         predictions.append(np.array(output_predictions[0]))
 
+
 if predictions != []:
     for i in predictions:
-        st.image(plt.imshow(predictions[0]), clamp=True)
+        img = Image.fromarray(predictions[0])
+        new_img = img.convert('RGB')
+        st.image(new_img, clamp=True)
 
-# for img in uploaded_files:
-#     if img is not None:
-#         st.image(img)
+for img in uploaded_files:
+    if img is not None:
+        st.image(img)
