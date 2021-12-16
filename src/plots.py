@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import torch
 import numpy as np
+from PIL import Image
 
 from src.utils import TYPE_NAMES
 
@@ -49,3 +50,29 @@ def plot_deeplab_mobile_predictions(model,
         ax[2].axis('off')
         ax[2].imshow(truth[0])
         plt.show()
+
+
+def plot_mobile_prediction_from_path(model, img_path):
+    img = np.array(Image.open(img_path))
+    img = img[:, :, 0]
+
+    input_tensor = torch.tensor(np.array(img)).expand(3, -1, -1).type(torch.ShortTensor).float()
+    input_batch = input_tensor.unsqueeze(0) 
+
+    with torch.no_grad():
+        output = model(input_batch)['out'][0]
+    output_predictions = output 
+
+    # create a color pallette, selecting a color for each class
+    palette = torch.tensor([2 ** 25 - 1, 2 ** 15 - 1, 2 ** 21 - 1])
+    colors = torch.as_tensor([i for i in range(21)])[:, None] * palette
+    colors = (colors % 255).numpy().astype("uint8")
+
+    _, ax = plt.subplots(1, 2, figsize=(15, 4))
+    ax[0].set_title('input image')
+    ax[0].axis('off')
+    ax[0].imshow(input_tensor[0])
+    ax[1].set_title('segmented output')
+    ax[1].axis('off')
+    ax[1].imshow(output_predictions[0])
+    plt.show()

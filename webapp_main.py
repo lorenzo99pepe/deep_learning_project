@@ -47,9 +47,9 @@ uploaded_files = st.file_uploader(
 predictions = []
 for img in uploaded_files:
     if img is not None:
-        img_proc = np.array(Image.open(img)).T
-        input_tensor = torch.tensor(img_proc).type(torch.ShortTensor).float()
-        st.write(input_tensor.shape)
+        img_proc = np.array(Image.open(img))
+        img_proc = img_proc[:, :, 0]
+        input_tensor = torch.tensor(np.array(img_proc)).expand(3, -1, -1).type(torch.ShortTensor).float()
         input_batch = input_tensor.unsqueeze(0) 
 
         with torch.no_grad():
@@ -57,13 +57,8 @@ for img in uploaded_files:
         output_predictions = output 
         predictions.append(np.array(output_predictions[0]))
 
+predictions = np.array(predictions)
 
 if predictions != []:
-    for i in predictions:
-        img = Image.fromarray(predictions[0])
-        new_img = img.convert('RGB')
-        st.image(new_img, clamp=True)
-
-for img in uploaded_files:
-    if img is not None:
-        st.image(img)
+    for i in range(len(predictions)):
+        st.image([uploaded_files[i], predictions[i]], clamp=True)
