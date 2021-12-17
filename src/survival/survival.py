@@ -11,6 +11,8 @@ def process_and_tensorize(image_list_clean, age, y):
         centered = img - np.mean(img)
         if np.std(centered) != 0:
             standardized = centered / np.std(centered)
+        else:
+            standardized = centered
         stacked = np.stack((standardized,) * 3, axis=-1)
         X.append(stacked)
     
