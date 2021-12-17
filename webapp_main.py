@@ -1,4 +1,5 @@
 import streamlit as st
+import cv2
 
 st.set_page_config(
     page_title="Brain Tumor Segmentation",
@@ -52,8 +53,7 @@ for img in uploaded_files:
         img_proc = np.array(Image.open(img))
         img_proc = img_proc[:, :, 0]
         input_tensor = (
-            torch.tensor(np.array(img_proc))
-            .expand(3, -1, -1)
+            torch.tensor(np.array(img_proc)).expand(3, -1, -1)
             .type(torch.ShortTensor)
             .float()
         )
@@ -61,11 +61,20 @@ for img in uploaded_files:
 
         with torch.no_grad():
             output = model(input_batch)["out"][0]
-        output_predictions = output
-        predictions.append(np.array(output_predictions[0]))
+        output_predictions = torch.amax(output, 0).numpy()
+        threshold_min = np.percentile(output_predictions, 90)
+        threshold_mid = np.percentile(output_predictions, 95)
+        threshold_max = np.percentile(output_predictions, 99)
+
+        output_pred = output_predictions
+        output_pred = np.where(output_predictions > threshold_min, threshold_min, 0)
+        output_pred = np.where(output_predictions > threshold_mid, threshold_mid, output_pred)
+        output_pred = np.where(output_predictions > threshold_max, threshold_max, output_pred)
+
+        predictions.append(np.array(output_pred))
 
 predictions = np.array(predictions)
 
 if predictions != []:
     for i in range(len(predictions)):
-        st.image([uploaded_files[i], predictions[i]], clamp=True)
+        st.image([uploaded_files[i], predictions[i]], clamp=True, channels="RGB")

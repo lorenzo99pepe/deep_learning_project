@@ -76,12 +76,12 @@ class SegmentationDataset(VisionDataset):
             self.fraction = fraction
             self.image_list = np.array(sorted(image_folder_path.glob("*")))
             self.mask_list = np.array(sorted(mask_folder_path.glob("*")))
-            if seed:
-                np.random.seed(seed)
-                indices = np.arange(len(self.image_list))
-                np.random.shuffle(indices)
-                self.image_list = self.image_list[indices]
-                self.mask_list = self.mask_list[indices]
+            # if seed:
+            #     np.random.seed(seed)
+            #     indices = np.arange(len(self.image_list))
+            #     np.random.shuffle(indices)
+            #     self.image_list = self.image_list[indices]
+            #     self.mask_list = self.mask_list[indices]
             if subset == "Train":
                 self.image_names = self.image_list[
                     : int(np.ceil(len(self.image_list) * (1 - self.fraction)))
