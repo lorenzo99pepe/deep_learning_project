@@ -53,7 +53,8 @@ for img in uploaded_files:
         img_proc = np.array(Image.open(img))
         img_proc = img_proc[:, :, 0]
         input_tensor = (
-            torch.tensor(np.array(img_proc)).expand(3, -1, -1)
+            torch.tensor(np.array(img_proc))
+            .expand(3, -1, -1)
             .type(torch.ShortTensor)
             .float()
         )
@@ -67,9 +68,15 @@ for img in uploaded_files:
         threshold_max = np.percentile(output_predictions, 99)
 
         output_pred = output_predictions
-        output_pred = np.where(output_predictions > threshold_min, threshold_min, 0)
-        output_pred = np.where(output_predictions > threshold_mid, threshold_mid, output_pred)
-        output_pred = np.where(output_predictions > threshold_max, threshold_max, output_pred)
+        output_pred = np.where(
+            output_predictions > threshold_min, threshold_min, 0
+        )
+        output_pred = np.where(
+            output_predictions > threshold_mid, threshold_mid, output_pred
+        )
+        output_pred = np.where(
+            output_predictions > threshold_max, threshold_max, output_pred
+        )
 
         predictions.append(np.array(output_pred))
 
